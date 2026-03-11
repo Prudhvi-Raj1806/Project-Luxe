@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAISON NUIT — Perfumerie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Cormorant:ital,wght@0,300;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════════════════
+   FOUNDATIONS
+══════════════════════════════════════════════════════ */
+:root {
+  --void:     #06050a;
+  --deep:     #0e0c14;
+  --chamber:  #16121e;
+  --veil:     #211b2e;
+  --dusk:     #2e2540;
+  --shadow:   #3d3355;
+
+  --gold:     #c8a96e;
+  --gold2:    #e8cfa0;
+  --gold3:    #f5e8cc;
+  --ember:    #d4773a;
+  --ember2:   #f09a5a;
+  --smoke:    #8a7f9a;
+  --mist:     #b8aece;
+  --pearl:    #f0ecf8;
+
+  --serif:    'Cormorant Garamond', 'Garamond', Georgia, serif;
+  --serif2:   'Cormorant', serif;
+  --mono:     'DM Mono', 'Courier New', monospace;
+
+  --ease-silk: cubic-bezier(.4, 0, .15, 1);
+  --ease-emerge: cubic-bezier(.2, 0, .05, 1);
+  --ease-vanish: cubic-bezier(.8, 0, 1, .8);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--void);
+  color: var(--pearl);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   CUSTOM CURSOR
+══════════════════════════════════════════════════════ */
+#cursor {
+  position: fixed; z-index: 9999;
+  pointer-events: none;
+  top: 0; left: 0;
+  mix-blend-mode: difference;
+}
+#cursor-outer {
+  position: absolute;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(200,169,110,0.6);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  transition: width .4s var(--ease-silk), height .4s var(--ease-silk),
+              border-color .4s, opacity .3s;
+}
+#cursor-inner {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, background .3s;
+}
+body.cursor-hover #cursor-outer {
+  width: 64px; height: 64px;
+  border-color: var(--gold2);
+}
+body.cursor-active #cursor-outer {
+  width: 20px; height: 20px;
+  background: rgba(200,169,110,0.15);
+}
+#cursor-label {
+  position: absolute;
+  transform: translate(-50%, 28px);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity .3s;
+}
+body.cursor-hover #cursor-label { opacity: 1; }
+
+/* ══════════════════════════════════════════════════════
+   GRAIN OVERLAY
+══════════════════════════════════════════════════════ */
+#grain {
+  position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+  opacity: .028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: grainShift 1.6s steps(2) infinite;
+}
+@keyframes grainShift {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(-4px, 2px); }
+  50%  { transform: translate(2px,-4px); }
+  75%  { transform: translate(-2px, 4px); }
+  100% { transform: translate(4px,-2px); }
+}
+
+/* ══════════════════════════════════════════════════════
+   VIGNETTE
+══════════════════════════════════════════════════════ */
+#vignette {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none;
+  background: radial-gradient(ellipse 90% 80% at 50% 50%,
+    transparent 40%, rgba(6,5,10,0.5) 75%, rgba(6,5,10,0.92) 100%);
+}
+
+/* ══════════════════════════════════════════════════════
+   AMBIENT PARTICLES
+══════════════════════════════════════════════════════ */
+#particles {
+  position: fixed; inset: 0; z-index: 50; pointer-events: none;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0;
+  animation: float-up var(--dur) var(--delay) ease-in-out infinite;
+}
+@keyframes float-up {
+  0%   { opacity: 0; transform: translateY(0) translateX(0) scale(0); }
+  15%  { opacity: var(--op); }
+  85%  { opacity: var(--op); }
+  100% { opacity: 0; transform: translateY(-120px) translateX(var(--drift)) scale(.3); }
+}
+
+/* ══════════════════════════════════════════════════════
+   FLAME / CANDLE
+══════════════════════════════════════════════════════ */
+#candle-wrap {
+  position: fixed; bottom: 48px; right: 64px;
+  z-index: 200; cursor: none;
+  display: flex; flex-direction: column; align-items: center;
+}
+.candle-body {
+  width: 14px;
+  height: 56px;
+  background: linear-gradient(to bottom, #f5f0e8 0%, #e8dcc8 40%, #c4b898 100%);
+  border-radius: 2px;
+  position: relative;
+}
+.candle-body::after {
+  content:''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, rgba(200,169,110,0.15));
+  border-radius: 0 0 2px 2px;
+}
+.candle-wick {
+  width: 1px; height: 10px;
+  background: #3a2a1a;
+  margin-bottom: 0;
+}
+.flame {
+  position: relative;
+  width: 12px; height: 20px;
+  filter: blur(.4px);
+  animation: flicker 2.1s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+@keyframes flicker {
+  0%   { transform: scaleX(1)   scaleY(1)   rotate(-1deg); }
+  20%  { transform: scaleX(.9)  scaleY(1.05) rotate(1.5deg); }
+  40%  { transform: scaleX(1.1) scaleY(.95) rotate(-2deg); }
+  60%  { transform: scaleX(.95) scaleY(1.08) rotate(1deg); }
+  80%  { transform: scaleX(1.05) scaleY(.98) rotate(-1.5deg); }
+  100% { transform: scaleX(1)   scaleY(1.02) rotate(.5deg); }
+}
+.flame-inner {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 8px; height: 16px;
+  background: radial-gradient(ellipse at 50% 100%, #fff8e0 0%, #ffd060 30%, #ff8c20 60%, transparent 100%);
+  border-radius: 50% 50% 40% 40%;
+}
+.flame-outer {
+  position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 12px; height: 20px;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255,160,20,.7) 0%, rgba(255,80,0,.4) 50%, transparent 80%);
+  border-radius: 50% 50% 40% 40%;
+}
+.flame-glow {
+  position: absolute; bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 40px;
+  background: radial-gradient(circle, rgba(255,160,20,.18) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glowPulse 2.1s ease-in-out infinite alternate;
+}
+@keyframes glowPulse {
+  from { opacity: .6; transform: translateX(-50%) scale(.9); }
+  to   { opacity: 1;  transform: translateX(-50%) scale(1.1); }
+}
+.candle-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .14em;
+  color: var(--gold);
+  margin-top: 10px;
+  opacity: .6;
+}
+
+/* ══════════════════════════════════════════════════════
+   NAVIGATION CONSTELLATION
+══════════════════════════════════════════════════════ */
+#nav-constellation {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 52px;
+}
+.nav-house {
+  font-family: var(--serif);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.nav-house em {
+  font-style: italic; font-weight: 300;
+  letter-spacing: .2em;
+  color: var(--smoke);
+}
+.nav-dots {
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--dusk);
+  border: 1px solid var(--shadow);
+  cursor: none;
+  transition: all .4s var(--ease-silk);
+}
+.nav-dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 8px rgba(200,169,110,.5);
+}
+.nav-dot.visited {
+  background: transparent;
+  border-color: var(--gold);
+  opacity: .5;
+}
+.nav-right {
+  display: flex; align-items: center; gap: 28px;
+}
+.nav-btn {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--smoke); background: none; border: none;
+  cursor: none;
+  transition: color .3s;
+}
+.nav-btn:hover { color: var(--gold2); }
+#cart-btn {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 18px;
+  border: 1px solid var(--shadow);
+  border-radius: 0;
+  color: var(--gold);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
+  text-transform: uppercase;
+  background: transparent; cursor: none;
+  transition: all .4s;
+}
+#cart-btn:hover { border-color: var(--gold); background: rgba(200,169,110,.04); }
+#cart-count {
+  background: var(--gold); color: var(--void);
+  width: 16px; height: 16px; border-radius: 50%;
+  font-size: 8px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .3s var(--ease-silk);
+}
+#cart-count.bump { transform: scale(1.5); }
+
+/* ══════════════════════════════════════════════════════
+   SCENE SYSTEM — full screen chambers
+══════════════════════════════════════════════════════ */
+.scene {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 1.2s var(--ease-silk);
+}
+.scene.active {
+  opacity: 1; pointer-events: all;
+}
+.scene.exiting {
+  opacity: 0; transition: opacity .7s var(--ease-vanish);
+}
+
+/* ── SCENE: THRESHOLD ── */
+#scene-threshold {
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 60%, rgba(44,37,58,.8) 0%, transparent 70%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(14,12,20,.9) 0%, transparent 60%),
+    var(--void);
+}
+.threshold-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--gold);
+  opacity: 0; animation: riseIn 1.4s 1.2s var(--ease-emerge) forwards;
+  margin-bottom: 20px;
+}
+.threshold-title {
+  font-family: var(--serif); font-size: clamp(5rem, 11vw, 10rem);
+  font-weight: 300; line-height: .92; letter-spacing: -.01em;
+  text-align: center; color: var(--pearl);
+  opacity: 0; animation: riseIn 1.6s 1.5s var(--ease-emerge) forwards;
+}
+.threshold-title em {
+  font-style: italic; font-weight: 300;
+  color: var(--gold2); display: block;
+}
+.threshold-rule {
+  width: 1px; height: 0; background: var(--gold);
+  margin: 40px auto;
+  animation: growLine 1.2s 2.4s var(--ease-silk) forwards;
+}
+@keyframes growLine {
+  to { height: 60px; }
+}
+.threshold-invitation {
+  font-family: var(--serif); font-style: italic;
+  font-size: 1.0625rem; color: var(--smoke); letter-spacing: .06em;
+  opacity: 0; animation: riseIn 1.2s 3s var(--ease-emerge) forwards;
+  margin-bottom: 48px;
+}
+.threshold-enter {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .28em;
+  text-transform: uppercase;
+  padding: 16px 40px;
+  border: 1px solid rgba(200,169,110,.3);
+  color: var(--gold2); background: transparent; cursor: none;
+  position: relative; overflow: hidden;
+  opacity: 0; animation: riseIn 1.2s 3.4s var(--ease-emerge) forwards;
+  transition: border-color .4s, color .4s;
+}
+.threshold-enter::before {
+  content:''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,169,110,.08), transparent);
+  transform: translateX(-100%);
+  transition: transform .6s var(--ease-silk);
+}
+.threshold-enter:hover::before { transform: translateX(0); }
+.threshold-enter:hover { border-color: var(--gold); color: var(--gold3); }
+.threshold-subtitle {
+  position: absolute; bottom: 64px;
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--shadow);
+  opacity: 0; animation: riseIn 1s 4s var(--ease-emerge) forwards;
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SCENE: ANTECHAMBER ── */
+#scene-antechamber {
+  background: var(--deep);
+}
+.antechamber-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%; height: 100%;
+  max-width: 1400px; max-height: 100vh;
+}
+.ritual-paths {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 120px 80px 60px;
+}
+.antechamber-heading {
+  font-family: var(--serif); font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 300; color: var(--mist);
+  letter-spacing: .04em; margin-bottom: 12px;
+  text-align: center;
+}
+.antechamber-heading em { font-style: italic; color: var(--gold2); }
+.antechamber-sub {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--smoke); margin-bottom: 60px;
+}
+
+/* ritual path cards */
+.paths-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; width: 100%; max-width: 960px;
+}
+.path-card {
+  position: relative; aspect-ratio: 3/4;
+  background: var(--chamber);
+  overflow: hidden; cursor: none;
+  border: 1px solid rgba(255,255,255,.04);
+  transition: border-color .6s;
+}
+.path-card::before {
+  content:''; position: absolute; inset: 0; z-index: 1;
+  background: var(--bg-ritual, rgba(14,12,20,1));
+  transition: opacity 1.2s var(--ease-silk);
+}
+.path-card:hover::before { opacity: 0; }
+.path-card-bg {
+  position: absolute; inset: 0;
+  transition: transform 1.6s var(--ease-silk);
+}
+.path-card:hover .path-card-bg { transform: scale(1.04); }
+.path-card:hover { border-color: rgba(200,169,110,.15); }
+
+/* CSS art backgrounds per ritual */
+.bg-matinal {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 70%, rgba(212,119,58,.25) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 70% 20%, rgba(200,169,110,.15) 0%, transparent 60%),
+    linear-gradient(160deg, #1a1208 0%, #2e1e08 40%, #1a1208 100%);
+}
+.bg-nocturne {
+  background:
+    radial-gradient(ellipse 70% 60% at 60% 40%, rgba(80,40,120,.3) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 30% 80%, rgba(20,15,40,.8) 0%, transparent 50%),
+    linear-gradient(145deg, #06040e 0%, #130e20 50%, #06040e 100%);
+}
+.bg-brume {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 30%, rgba(140,130,160,.2) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 20% 70%, rgba(100,90,130,.15) 0%, transparent 50%),
+    linear-gradient(150deg, #0e0c18 0%, #181428 50%, #0e0c18 100%);
+}
+
+.path-card-content {
+  position: absolute; inset: 0; z-index: 2;
+  display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 32px 28px;
+  background: linear-gradient(to top, rgba(6,5,10,.85) 0%, rgba(6,5,10,.2) 50%, transparent 100%);
+}
+.path-ritual-no {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .24em;
+  color: var(--gold); margin-bottom: 14px; opacity: .7;
+}
+.path-name {
+  font-family: var(--serif); font-size: 1.75rem; font-weight: 300;
+  line-height: 1.1; color: var(--pearl); margin-bottom: 8px;
+}
+.path-name em { font-style: italic; color: var(--gold2); display: block; }
+.path-mood {
+  font-family: var(--serif); font-style: italic; font-size: .875rem;
+  color: var(--smoke); line-height: 1.6; margin-bottom: 20px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .5s .1s, transform .5s .1s var(--ease-silk);
+}
+.path-card:hover .path-mood { opacity: 1; transform: translateY(0); }
+.path-enter {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .4s .2s, transform .4s .2s;
+}
+.path-enter::after {
+  content:''; display: block; width: 0; height: 1px;
+  background: var(--gold);
+  transition: width .5s .1s var(--ease-silk);
+}
+.path-card:hover .path-enter { opacity: 1; transform: translateY(0); }
+.path-card:hover .path-enter::after { width: 32px; }
+
+/* ── SCENE: PRODUCT CHAMBER ── */
+.chamber-scene {
+  background: var(--void);
+}
+.chamber-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%; height: 100%;
+}
+
+/* left — atmospheric side */
+.chamber-atmosphere {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border-right: 1px solid rgba(255,255,255,.04);
+}
+.atm-bg {
+  position: absolute; inset: 0;
+  transition: opacity 1.4s var(--ease-silk);
+}
+
+/* product vessel */
+.vessel-stage {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column; align-items: center;
+  cursor: none;
+}
+.vessel-wrap {
+  position: relative;
+  width: 160px; height: 240px;
+  transform-style: preserve-3d;
+  transition: transform .1s linear;
+}
+.vessel {
+  position: relative; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,.6));
+}
+
+/* CSS bottle */
+.bottle-neck {
+  width: 28px; height: 40px;
+  background: var(--bottle-color, linear-gradient(to right, rgba(180,160,120,.6), rgba(220,200,160,.8), rgba(180,160,120,.6)));
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  margin-bottom: -1px;
+}
+.bottle-cap {
+  position: absolute; top: -14px; left: 50%;
+  transform: translateX(-50%);
+  width: 36px; height: 16px;
+  background: linear-gradient(to bottom, var(--gold2), var(--gold));
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 2px 8px rgba(200,169,110,.3);
+  transition: transform .6s var(--ease-silk);
+}
+.vessel-stage:hover .bottle-cap { transform: translateX(-50%) translateY(-8px); }
+.bottle-body {
+  width: 100px; height: 160px;
+  background: var(--bottle-body, linear-gradient(135deg, rgba(140,120,80,.3), rgba(200,180,120,.4), rgba(140,120,80,.3)));
+  border-radius: 6px;
+  position: relative;
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+  box-shadow:
+    inset 2px 0 12px rgba(255,255,255,.08),
+    inset -2px 0 8px rgba(0,0,0,.3),
+    0 0 40px rgba(200,169,110,.1);
+}
+.bottle-body::before {
+  content: '';
+  position: absolute; top: 0; left: 15%; bottom: 0; width: 20%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,.12), transparent);
+  border-radius: 50%;
+}
+.bottle-body::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: inherit;
+  opacity: .4;
+  filter: blur(8px);
+  z-index: -1;
+}
+.bottle-label-area {
+  position: absolute; inset: 20px;
+  border: 1px solid rgba(200,169,110,.2);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+}
+.bottle-label-name {
+  font-family: var(--serif); font-size: 11px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(240,236,248,.7); text-align: center;
+}
+.bottle-label-vol {
+  font-family: var(--mono); font-size: 7px; letter-spacing: .18em;
+  color: rgba(200,169,110,.5);
+}
+.vessel-shadow {
+  width: 80px; height: 16px;
+  background: radial-gradient(ellipse, rgba(0,0,0,.6) 0%, transparent 70%);
+  margin-top: -4px;
+}
+
+/* scent aura — appears on hover */
+.scent-aura {
+  position: absolute; z-index: 5;
+  pointer-events: none;
+}
+.aura-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(200,169,110,.0);
+  transform: translate(-50%,-50%) scale(0);
+  transition: all 1.6s var(--ease-silk);
+}
+.vessel-stage:hover .aura-ring:nth-child(1) {
+  border-color: rgba(200,169,110,.12);
+  transform: translate(-50%,-50%) scale(1);
+}
+.vessel-stage:hover .aura-ring:nth-child(2) {
+  border-color: rgba(200,169,110,.07);
+  transform: translate(-50%,-50%) scale(1.5);
+  transition-delay: .2s;
+}
+.vessel-stage:hover .aura-ring:nth-child(3) {
+  border-color: rgba(200,169,110,.04);
+  transform: translate(-50%,-50%) scale(2.2);
+  transition-delay: .4s;
+}
+
+/* ── right — ritual scroll ── */
+.chamber-ritual {
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 100px 72px 80px;
+  position: relative; overflow: hidden;
+}
+.chamber-ritual::before {
+  content: attr(data-number);
+  position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+  font-family: var(--serif); font-size: 28vw; font-weight: 300;
+  color: rgba(255,255,255,.02); line-height: 1; pointer-events: none;
+  letter-spacing: -.04em;
+}
+.ritual-breadcrumb {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--gold); opacity: .6;
+  margin-bottom: 28px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ritual-breadcrumb span { opacity: .4; }
+.ritual-title {
+  font-family: var(--serif); font-size: clamp(3rem, 4.5vw, 5.5rem);
+  font-weight: 300; line-height: .92; letter-spacing: -.015em;
+  color: var(--pearl); margin-bottom: 10px;
+}
+.ritual-title em {
+  font-style: italic; color: var(--gold2); display: block; font-weight: 300;
+}
+.ritual-origin {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--smoke); margin-bottom: 36px;
+}
+
+/* note pyramid */
+.notes-section { margin-bottom: 36px; }
+.notes-label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--shadow); margin-bottom: 16px;
+}
+.notes-pyramid {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.note-tier {
+  display: flex; align-items: baseline; gap: 16px;
+}
+.note-tier-name {
+  font-family: var(--mono); font-size: 7px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--gold); opacity: .5;
+  min-width: 44px;
+}
+.note-items {
+  font-family: var(--serif); font-style: italic; font-size: 1rem;
+  color: var(--mist); letter-spacing: .02em; line-height: 1.4;
+}
+.note-items strong { font-style: normal; font-weight: 400; color: var(--pearl); }
+
+/* ritual description */
+.ritual-desc {
+  font-family: var(--serif); font-size: 1.0625rem; line-height: 1.85;
+  color: var(--smoke); letter-spacing: .02em;
+  max-width: 440px; margin-bottom: 40px;
+}
+.ritual-desc em { font-style: italic; color: var(--mist); }
+
+/* size selector */
+.size-row {
+  display: flex; gap: 8px; margin-bottom: 36px;
+}
+.size-opt {
+  padding: 10px 20px; border: 1px solid var(--shadow);
+  background: transparent; color: var(--smoke);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .16em;
+  cursor: none; transition: all .3s;
+  position: relative;
+}
+.size-opt.active {
+  border-color: var(--gold); color: var(--gold2);
+  background: rgba(200,169,110,.04);
+}
+.size-opt .size-price {
+  display: block; font-size: 7px; opacity: .6; margin-top: 2px;
+}
+
+/* add to tray */
+.add-ritual {
+  display: flex; align-items: center; gap: 20px;
+}
+.btn-add {
+  flex: 1; padding: 18px 32px;
+  background: transparent;
+  border: 1px solid rgba(200,169,110,.4);
+  color: var(--gold2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase;
+  cursor: none; position: relative; overflow: hidden;
+  transition: all .5s var(--ease-silk);
+}
+.btn-add::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,169,110,.12), rgba(200,169,110,.06));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .5s var(--ease-silk);
+}
+.btn-add:hover { border-color: var(--gold); color: var(--gold3); }
+.btn-add:hover::before { transform: scaleX(1); }
+.btn-add.adding { animation: addPulse .5s ease; }
+@keyframes addPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(200,169,110,.4); }
+  100% { box-shadow: 0 0 0 20px rgba(200,169,110,0); }
+}
+.btn-wishlist {
+  width: 52px; height: 52px; border: 1px solid var(--shadow);
+  background: transparent; color: var(--smoke); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none; transition: all .3s;
+}
+.btn-wishlist:hover { border-color: var(--gold); color: var(--gold); }
+.btn-wishlist.loved { color: var(--ember2); border-color: var(--ember); }
+
+/* bottom nav */
+.chamber-nav {
+  position: absolute; bottom: 40px; left: 72px;
+  display: flex; align-items: center; gap: 24px;
+}
+.chamber-nav-btn {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--smoke);
+  background: none; border: none; cursor: none;
+  display: flex; align-items: center; gap: 10px;
+  transition: color .3s; padding: 0;
+}
+.chamber-nav-btn:hover { color: var(--gold); }
+.chamber-nav-btn .nav-arrow {
+  font-size: 14px; transition: transform .3s;
+}
+.chamber-nav-btn:hover .nav-arrow { transform: translateX(-3px); }
+.chamber-nav-btn.fwd:hover .nav-arrow { transform: translateX(3px); }
+
+/* ── SCENE: COLLECTION TRAY ── */
+#scene-tray {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, var(--chamber) 0%, var(--void) 70%),
+    var(--void);
+  flex-direction: column;
+}
+.tray-inner {
+  width: 100%; max-width: 1000px;
+  padding: 120px 64px 60px;
+  display: flex; flex-direction: column;
+}
+.tray-heading {
+  font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem);
+  font-weight: 300; letter-spacing: -.015em; color: var(--pearl);
+  margin-bottom: 8px;
+}
+.tray-heading em { font-style: italic; color: var(--gold2); }
+.tray-sub {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--smoke); margin-bottom: 52px;
+}
+.tray-items { display: flex; flex-direction: column; gap: 0; flex: 1; }
+.tray-item {
+  display: grid; grid-template-columns: 64px 1fr auto auto;
+  align-items: center; gap: 28px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  opacity: 0; animation: trayIn .5s ease forwards;
+}
+@keyframes trayIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.tray-item-swatch {
+  width: 52px; height: 68px;
+  border-radius: 2px; position: relative;
+  overflow: hidden;
+}
+.tray-item-info { display: flex; flex-direction: column; gap: 4px; }
+.tray-item-name {
+  font-family: var(--serif); font-size: 1.25rem; font-weight: 400;
+  color: var(--pearl); letter-spacing: -.01em;
+}
+.tray-item-name em { font-style: italic; color: var(--gold2); }
+.tray-item-detail {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--smoke);
+}
+.tray-item-qty {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: 10px; color: var(--smoke);
+}
+.qty-btn {
+  width: 24px; height: 24px; border: 1px solid var(--shadow);
+  background: transparent; color: var(--smoke); cursor: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: all .2s;
+}
+.qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+.tray-item-price {
+  font-family: var(--serif); font-size: 1.125rem; font-weight: 300;
+  color: var(--gold2); letter-spacing: .02em;
+  text-align: right; min-width: 80px;
+}
+.tray-footer {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding-top: 36px;
+}
+.tray-total-label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--smoke); margin-bottom: 6px;
+}
+.tray-total {
+  font-family: var(--serif); font-size: 3rem; font-weight: 300;
+  color: var(--pearl); letter-spacing: -.02em; line-height: 1;
+}
+.tray-total em { font-style: italic; color: var(--gold2); }
+.tray-actions { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+.btn-complete {
+  padding: 18px 48px; border: 1px solid var(--gold);
+  background: transparent; color: var(--gold2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .3em;
+  text-transform: uppercase; cursor: none;
+  position: relative; overflow: hidden; transition: all .5s;
+}
+.btn-complete::before {
+  content:''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,169,110,.14), rgba(200,169,110,.06));
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform .5s var(--ease-silk);
+}
+.btn-complete:hover { color: var(--gold3); }
+.btn-complete:hover::before { transform: scaleY(1); }
+.btn-continue {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--smoke); background: none; border: none;
+  cursor: none; transition: color .3s;
+}
+.btn-continue:hover { color: var(--gold); }
+.tray-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+  color: var(--shadow);
+}
+.tray-empty-icon { font-size: 48px; opacity: .3; margin-bottom: 8px; }
+.tray-empty-text {
+  font-family: var(--serif); font-style: italic; font-size: 1.25rem;
+  color: var(--shadow);
+}
+.tray-empty-btn {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--gold); background: none;
+  border: 1px solid rgba(200,169,110,.25); padding: 12px 28px;
+  cursor: none; margin-top: 12px; transition: all .3s;
+}
+.tray-empty-btn:hover { border-color: var(--gold); }
+
+/* ══════════════════════════════════════════════════════
+   TOAST NOTIFICATION
+══════════════════════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 48px; left: 52px; z-index: 8000;
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 24px;
+  background: var(--veil);
+  border: 1px solid rgba(200,169,110,.2);
+  color: var(--pearl);
+  font-family: var(--serif); font-size: .9375rem;
+  transform: translateY(20px); opacity: 0;
+  transition: all .5s var(--ease-silk);
+  pointer-events: none;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast-icon { font-size: 20px; }
+#toast-text { font-style: italic; color: var(--mist); }
+#toast-name { font-weight: 500; color: var(--gold2); font-style: normal; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE TRANSITION CURTAIN
+══════════════════════════════════════════════════════ */
+#curtain {
+  position: fixed; inset: 0; z-index: 5000;
+  background: var(--void); pointer-events: none;
+  opacity: 0; transition: opacity .6s var(--ease-vanish);
+}
+#curtain.closing { opacity: 1; transition: opacity .4s ease; }
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════ */
+@media (max-width: 860px) {
+  .chamber-inner { grid-template-columns: 1fr; }
+  .chamber-atmosphere { display: none; }
+  .chamber-ritual { padding: 100px 32px 80px; }
+  .antechamber-inner { padding: 100px 32px 60px; }
+  .paths-grid { grid-template-columns: 1fr; max-width: 340px; gap: 12px; }
+  .path-card { aspect-ratio: 2/1; }
+  #nav-constellation { padding: 20px 24px; }
+  .tray-inner { padding: 100px 32px 60px; }
+  .tray-item { grid-template-columns: 1fr auto; gap: 12px; }
+  .tray-item-swatch { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Grain + Vignette -->
+<div id="grain" aria-hidden="true"></div>
+<div id="vignette" aria-hidden="true"></div>
+
+<!-- Custom cursor -->
+<div id="cursor" aria-hidden="true">
+  <div id="cursor-outer"></div>
+  <div id="cursor-inner"></div>
+  <div id="cursor-label" id="cursor-label"></div>
+</div>
+
+<!-- Ambient particles -->
+<div id="particles" aria-hidden="true"></div>
+
+<!-- Candle -->
+<div id="candle-wrap" aria-hidden="true">
+  <div class="flame">
+    <div class="flame-glow"></div>
+    <div class="flame-outer"></div>
+    <div class="flame-inner"></div>
+  </div>
+  <div class="candle-wick"></div>
+  <div class="candle-body"></div>
+  <div class="candle-num" id="candle-num">I</div>
+</div>
+
+<!-- Navigation -->
+<nav id="nav-constellation" aria-label="Main navigation">
+  <div class="nav-house">Maison <em>Nuit</em></div>
+  <div class="nav-dots" id="nav-dots" role="tablist" aria-label="Collection rooms"></div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="showScene('antechamber')" aria-label="Collections">Collections</button>
+    <button class="nav-btn" aria-label="About">Maison</button>
+    <button class="nav-btn" id="cart-btn" onclick="showScene('tray')" aria-label="Open collection tray">
+      Tray
+      <span id="cart-count" aria-live="polite">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ SCENE: THRESHOLD ══ -->
+<section id="scene-threshold" class="scene active" role="main" aria-label="Welcome">
+  <div class="threshold-eyebrow">Parfumerie — Est. MCMXVIII</div>
+  <h1 class="threshold-title">
+    Maison
+    <em>Nuit</em>
+  </h1>
+  <div class="threshold-rule" aria-hidden="true"></div>
+  <p class="threshold-invitation">
+    Each fragrance is a room. You are invited to enter.
+  </p>
+  <button class="threshold-enter" onclick="showScene('antechamber')" aria-label="Enter the collection">
+    Enter the Collection
+  </button>
+  <p class="threshold-subtitle">Seven fragrances — three discovery rituals</p>
+</section>
+
+<!-- ══ SCENE: ANTECHAMBER ══ -->
+<section id="scene-antechamber" class="scene" aria-label="Choose your ritual">
+  <div class="antechamber-inner">
+    <div class="ritual-paths">
+      <h2 class="antechamber-heading">Choose your <em>ritual</em></h2>
+      <p class="antechamber-sub">Each path reveals a different collection</p>
+      <div class="paths-grid" role="list">
+
+        <article class="path-card" role="listitem"
+          onclick="showChamber(0)"
+          data-cursor="Enter">
+          <div class="path-card-bg bg-matinal"></div>
+          <div class="path-card-content">
+            <div class="path-ritual-no">Ritual — 01</div>
+            <h3 class="path-name">Le Matin<em>Doré</em></h3>
+            <p class="path-mood">Bergamot and morning light. The warmth before the world wakes.</p>
+            <div class="path-enter">Enter ritual</div>
+          </div>
+        </article>
+
+        <article class="path-card" role="listitem"
+          onclick="showChamber(3)"
+          data-cursor="Enter">
+          <div class="path-card-bg bg-nocturne"></div>
+          <div class="path-card-content">
+            <div class="path-ritual-no">Ritual — 02</div>
+            <h3 class="path-name">Nocturne<em>Absolu</em></h3>
+            <p class="path-mood">Oud and violet. The hours that belong only to the night.</p>
+            <div class="path-enter">Enter ritual</div>
+          </div>
+        </article>
+
+        <article class="path-card" role="listitem"
+          onclick="showChamber(5)"
+          data-cursor="Enter">
+          <div class="path-card-bg bg-brume"></div>
+          <div class="path-card-content">
+            <div class="path-ritual-no">Ritual — 03</div>
+            <h3 class="path-name">La Brume<em>Intérieure</em></h3>
+            <p class="path-mood">Iris and grey cashmere. The soft interior of solitude.</p>
+            <div class="path-enter">Enter ritual</div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCENES: PRODUCT CHAMBERS (generated by JS) ══ -->
+
+<!-- ══ SCENE: TRAY ══ -->
+<section id="scene-tray" class="scene" aria-label="Your collection tray">
+  <div class="tray-inner">
+    <h2 class="tray-heading">Your<br><em>Tray</em></h2>
+    <p class="tray-sub" id="tray-sub">Nothing selected yet</p>
+    <div class="tray-items" id="tray-items"></div>
+    <div class="tray-footer" id="tray-footer" style="display:none">
+      <div>
+        <div class="tray-total-label">Total</div>
+        <div class="tray-total" id="tray-total">€<em id="tray-total-val">0</em></div>
+      </div>
+      <div class="tray-actions">
+        <button class="btn-complete" aria-label="Complete ritual">Complete the Ritual</button>
+        <button class="btn-continue" onclick="showScene('antechamber')" aria-label="Continue browsing">← Continue exploring</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast -->
+<div id="toast" role="alert" aria-live="assertive">
+  <span id="toast-icon">◈</span>
+  <span id="toast-text"><span id="toast-name"></span> added to your tray</span>
+</div>
+
+<!-- Curtain transition -->
+<div id="curtain" aria-hidden="true"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════════ */
+const FRAGRANCES = [
+  {
+    id: 'aurore',
+    name: 'Aurore',
+    subtitle: 'Incarnée',
+    origin: 'Grasse · Provence',
+    number: 'I',
+    desc: 'Born at the hour when night releases its hold. A fragrance of impossible lightness — the dew on lavender before the sun has dried it, the first warmth of stone.',
+    topNotes: ['Bergamot', 'Pink Pepper'],
+    heartNotes: ['Lavender Absolute', '<strong>Jasmine</strong>'],
+    baseNotes: ['White Musk', 'Sandalwood'],
+    sizes: [
+      { ml: '30ml', price: '€185' },
+      { ml: '75ml', price: '€295' },
+      { ml: '150ml', price: '€420' },
+    ],
+    priceNum: 295,
+    atmosphere: 'linear-gradient(160deg, #1c1408 0%, #2e2010 35%, #4a3418 60%, #2a1c08 100%)',
+    bottleColor: 'rgba(220,190,130,.35)',
+    bottleBody: 'linear-gradient(145deg, rgba(220,190,130,.25), rgba(240,220,160,.35), rgba(200,170,110,.25))',
+    swatchBg: 'linear-gradient(145deg, #3a2a10, #c89040)',
+    atmospherePt2: 'rgba(212,119,58,.15)',
+  },
+  {
+    id: 'veloute',
+    name: 'Velouté',
+    subtitle: 'Obscur',
+    origin: 'Florence · Tuscany',
+    number: 'II',
+    desc: 'The inside of a fig, split open at noon. Sun-warmed skin in a shuttered room. <em>Velvet</em> in every sense of the word — texture you can almost feel.',
+    topNotes: ['Fig Leaf', 'Black Currant'],
+    heartNotes: ['<strong>Fig Absolute</strong>', 'Iris Root'],
+    baseNotes: ['Amber', 'Oakmoss'],
+    sizes: [
+      { ml: '30ml', price: '€210' },
+      { ml: '75ml', price: '€335' },
+      { ml: '150ml', price: '€480' },
+    ],
+    priceNum: 335,
+    atmosphere: 'linear-gradient(150deg, #14080a 0%, #28100e 40%, #3c1a14 65%, #1e0c08 100%)',
+    bottleColor: 'rgba(180,100,60,.3)',
+    bottleBody: 'linear-gradient(145deg, rgba(160,80,40,.25), rgba(200,120,70,.35), rgba(150,70,30,.2))',
+    swatchBg: 'linear-gradient(145deg, #2a0e08, #8c3820)',
+    atmospherePt2: 'rgba(180,60,20,.18)',
+  },
+  {
+    id: 'cipher',
+    name: 'Chiffre',
+    subtitle: 'VII',
+    origin: 'Kyoto · Japan',
+    number: 'III',
+    desc: 'Hinoki cypress and cold mineral water drawn from the deep aquifer beneath the temple. A fragrance that asks nothing and offers everything.',
+    topNotes: ['Yuzu', 'Green Tea'],
+    heartNotes: ['<strong>Hinoki Cypress</strong>', 'Vetiver'],
+    baseNotes: ['Grey Amber', 'Cedar'],
+    sizes: [
+      { ml: '30ml', price: '€195' },
+      { ml: '75ml', price: '€310' },
+      { ml: '150ml', price: '€445' },
+    ],
+    priceNum: 310,
+    atmosphere: 'linear-gradient(160deg, #080e14 0%, #0e1820 40%, #141e28 65%, #080c12 100%)',
+    bottleColor: 'rgba(130,170,180,.3)',
+    bottleBody: 'linear-gradient(145deg, rgba(100,150,170,.2), rgba(150,190,200,.3), rgba(90,140,160,.2))',
+    swatchBg: 'linear-gradient(145deg, #080c14, #1a4050)',
+    atmospherePt2: 'rgba(20,80,120,.2)',
+  },
+  {
+    id: 'nuit_oud',
+    name: 'Nuit d\'Oud',
+    subtitle: 'Éternelle',
+    origin: 'Laos · Southeast Asia',
+    number: 'IV',
+    desc: 'Oud from the oldest trees — the ones that took forty years to form their resin. Violet and shadow. This is the perfume of the darkest hour before dawn.',
+    topNotes: ['Saffron', 'Black Pepper'],
+    heartNotes: ['<strong>Oud Absolu</strong>', 'Violet Leaf'],
+    baseNotes: ['Benzoin', 'Patchouli', 'Dark Musk'],
+    sizes: [
+      { ml: '30ml', price: '€380' },
+      { ml: '75ml', price: '€595' },
+      { ml: '150ml', price: '€850' },
+    ],
+    priceNum: 595,
+    atmosphere: 'linear-gradient(150deg, #060408 0%, #100a18 40%, #180e22 65%, #08040e 100%)',
+    bottleColor: 'rgba(120,80,160,.25)',
+    bottleBody: 'linear-gradient(145deg, rgba(80,40,110,.25), rgba(130,80,170,.3), rgba(70,30,100,.2))',
+    swatchBg: 'linear-gradient(145deg, #06040e, #3a1458)',
+    atmospherePt2: 'rgba(80,20,120,.2)',
+  },
+  {
+    id: 'cuir_noir',
+    name: 'Cuir Noir',
+    subtitle: 'de Russie',
+    origin: 'St. Petersburg · Russia',
+    number: 'V',
+    desc: 'The smell of a library in a house that has never been sold. Russian leather, birch tar, the ghost of tobacco. An architecture of memory.',
+    topNotes: ['Birch Tar', 'Cardamom'],
+    heartNotes: ['<strong>Russian Leather</strong>', 'Tobacco Absolute'],
+    baseNotes: ['Labdanum', 'Castoreum', 'Sandalwood'],
+    sizes: [
+      { ml: '30ml', price: '€245' },
+      { ml: '75ml', price: '€385' },
+      { ml: '150ml', price: '€545' },
+    ],
+    priceNum: 385,
+    atmosphere: 'linear-gradient(155deg, #0e0a06 0%, #1e1408 40%, #2e1e0a 65%, #0e0c06 100%)',
+    bottleColor: 'rgba(100,70,40,.35)',
+    bottleBody: 'linear-gradient(145deg, rgba(80,50,20,.3), rgba(120,80,40,.38), rgba(70,40,15,.25))',
+    swatchBg: 'linear-gradient(145deg, #0e0804, #3a2008)',
+    atmospherePt2: 'rgba(100,50,10,.2)',
+  },
+  {
+    id: 'iris_gris',
+    name: 'Iris Gris',
+    subtitle: 'de Novembre',
+    origin: 'Florence · Tuscany',
+    number: 'VI',
+    desc: 'Iris absolute requires four years from bulb to absolute. This patience is the fragrance itself — something that cannot be hurried. <em>Powdery, cool, and absolute.</em>',
+    topNotes: ['Aldehydes', 'Petitgrain'],
+    heartNotes: ['<strong>Iris Pallida</strong>', 'Cashmere Wood'],
+    baseNotes: ['White Musks', 'Ambrette'],
+    sizes: [
+      { ml: '30ml', price: '€290' },
+      { ml: '75ml', price: '€460' },
+      { ml: '150ml', price: '€650' },
+    ],
+    priceNum: 460,
+    atmosphere: 'linear-gradient(150deg, #0c0c14 0%, #181622 40%, #201e2e 65%, #0c0a14 100%)',
+    bottleColor: 'rgba(180,160,200,.25)',
+    bottleBody: 'linear-gradient(145deg, rgba(150,130,180,.2), rgba(200,180,220,.28), rgba(140,120,170,.18))',
+    swatchBg: 'linear-gradient(145deg, #0e0c18, #4a3868)',
+    atmospherePt2: 'rgba(100,80,150,.18)',
+  },
+  {
+    id: 'encens',
+    name: 'Encens',
+    subtitle: 'Perpétuel',
+    origin: 'Oman · Arabian Peninsula',
+    number: 'VII',
+    desc: 'Frankincense resin burned in gold censers. The smoke that carries prayers upward. This is the oldest fragrance in the world, reborn in contemporary form.',
+    topNotes: ['Frankincense', 'Pink Pepper'],
+    heartNotes: ['<strong>Olibanum Absolute</strong>', 'Rose de Mai'],
+    baseNotes: ['Myrrh', 'Oud', 'Resins'],
+    sizes: [
+      { ml: '30ml', price: '€320' },
+      { ml: '75ml', price: '€505' },
+      { ml: '150ml', price: '€720' },
+    ],
+    priceNum: 505,
+    atmosphere: 'linear-gradient(145deg, #100a06 0%, #201408 40%, #301a0a 65%, #100c06 100%)',
+    bottleColor: 'rgba(220,170,80,.28)',
+    bottleBody: 'linear-gradient(145deg, rgba(180,130,50,.2), rgba(230,180,80,.3), rgba(170,120,40,.2))',
+    swatchBg: 'linear-gradient(145deg, #100806, #5a3808)',
+    atmospherePt2: 'rgba(160,90,10,.18)',
+  },
+];
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let currentScene = 'threshold';
+let currentChamberIdx = 0;
+let cart = {};
+let selectedSizes = {};
+let wishlist = new Set();
+
+/* ══════════════════════════════════════════════════════
+   CURSOR
+══════════════════════════════════════════════════════ */
+const cursorEl = document.getElementById('cursor');
+const cursorLabel = document.getElementById('cursor-label');
+let cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+let tx = cx, ty = cy;
+
+document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+
+(function animateCursor() {
+  cx += (tx - cx) * .14;
+  cy += (ty - cy) * .14;
+  cursorEl.style.left = cx + 'px';
+  cursorEl.style.top  = cy + 'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-active'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-active'));
+
+// Hoverable elements
+function updateCursorHover(e) {
+  const t = e.target.closest('[data-cursor]');
+  if (t) {
+    document.body.classList.add('cursor-hover');
+    cursorLabel.textContent = t.dataset.cursor || '';
+  } else if (e.target.closest('button, a, .size-opt, .path-card, .qty-btn, .btn-wishlist')) {
+    document.body.classList.add('cursor-hover');
+    cursorLabel.textContent = '';
+  } else {
+    document.body.classList.remove('cursor-hover');
+    cursorLabel.textContent = '';
+  }
+}
+document.addEventListener('mousemove', updateCursorHover);
+
+/* ══════════════════════════════════════════════════════
+   PARTICLES
+══════════════════════════════════════════════════════ */
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 24; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const x = 20 + Math.random() * 60;
+    const op = (.04 + Math.random() * .1).toFixed(2);
+    const dur = (6 + Math.random() * 10).toFixed(1);
+    const delay = (Math.random() * 8).toFixed(1);
+    const drift = (Math.random() * 40 - 20).toFixed(0);
+    p.style.cssText = `left:${x}%;bottom:${10+Math.random()*20}%;
+      --dur:${dur}s;--delay:${delay}s;--op:${op};--drift:${drift}px`;
+    container.appendChild(p);
+  }
+}
+spawnParticles();
+
+/* ══════════════════════════════════════════════════════
+   NAV DOTS
+══════════════════════════════════════════════════════ */
+function buildNavDots() {
+  const container = document.getElementById('nav-dots');
+  container.innerHTML = '';
+  FRAGRANCES.forEach((f, i) => {
+    const d = document.createElement('button');
+    d.className = 'nav-dot';
+    d.setAttribute('role', 'tab');
+    d.setAttribute('aria-label', `${f.name} ${f.subtitle}`);
+    d.dataset.cursor = f.name;
+    d.onclick = () => showChamber(i);
+    container.appendChild(d);
+  });
+}
+buildNavDots();
+
+function updateNavDots(idx) {
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+    d.classList.toggle('visited', i < idx);
+  });
+  document.getElementById('candle-num').textContent = FRAGRANCES[idx]?.number || 'I';
+}
+
+/* ══════════════════════════════════════════════════════
+   SCENE ENGINE
+══════════════════════════════════════════════════════ */
+function showScene(id, onEnter) {
+  const curtain = document.getElementById('curtain');
+  curtain.classList.add('closing');
+  setTimeout(() => {
+    document.querySelectorAll('.scene').forEach(s => {
+      s.classList.remove('active', 'exiting');
+    });
+    const next = document.getElementById('scene-' + id);
+    if (next) next.classList.add('active');
+    currentScene = id;
+    if (onEnter) onEnter();
+    curtain.classList.remove('closing');
+    if (id === 'tray') renderTray();
+  }, 420);
+}
+
+function showChamber(idx) {
+  currentChamberIdx = idx;
+  const scene = ensureChamberScene(idx);
+  updateNavDots(idx);
+  showScene('chamber-' + idx);
+}
+
+/* ══════════════════════════════════════════════════════
+   CHAMBER BUILDER
+══════════════════════════════════════════════════════ */
+function ensureChamberScene(idx) {
+  const id = 'scene-chamber-' + idx;
+  if (document.getElementById(id)) return;
+
+  const f = FRAGRANCES[idx];
+  const section = document.createElement('section');
+  section.id = id;
+  section.className = 'scene chamber-scene';
+  section.setAttribute('aria-label', `${f.name} — ${f.subtitle}`);
+  section.dataset.number = f.number;
+
+  const prevIdx = idx > 0 ? idx - 1 : null;
+  const nextIdx = idx < FRAGRANCES.length - 1 ? idx + 1 : null;
+
+  section.innerHTML = `
+    <div class="chamber-inner">
+      <!-- Atmosphere / visual -->
+      <div class="chamber-atmosphere">
+        <div class="atm-bg" style="background:${f.atmosphere}"></div>
+        <div class="vessel-stage" data-cursor="Discover">
+          <div class="scent-aura">
+            <div class="aura-ring" style="width:200px;height:200px;top:50%;left:50%"></div>
+            <div class="aura-ring" style="width:200px;height:200px;top:50%;left:50%"></div>
+            <div class="aura-ring" style="width:200px;height:200px;top:50%;left:50%"></div>
+          </div>
+          <div class="vessel-wrap" id="vessel-${idx}">
+            <div class="vessel">
+              <div class="bottle-neck">
+                <div class="bottle-cap"></div>
+              </div>
+              <div class="bottle-body" style="background:${f.bottleBody}">
+                <div class="bottle-label-area">
+                  <div class="bottle-label-name">${f.name}</div>
+                  <div class="bottle-label-vol">${f.subtitle}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="vessel-shadow"></div>
+        </div>
+      </div>
+
+      <!-- Ritual content -->
+      <div class="chamber-ritual" data-number="${f.number}">
+        <div class="ritual-breadcrumb">
+          <span>Collection</span> <span>›</span> ${f.name}
+        </div>
+        <h1 class="ritual-title">
+          ${f.name}<em>${f.subtitle}</em>
+        </h1>
+        <div class="ritual-origin">${f.origin}</div>
+
+        <div class="notes-section">
+          <div class="notes-label">Olfactory Composition</div>
+          <div class="notes-pyramid">
+            <div class="note-tier">
+              <span class="note-tier-name">Head</span>
+              <span class="note-items">${f.topNotes.join(', ')}</span>
+            </div>
+            <div class="note-tier">
+              <span class="note-tier-name">Heart</span>
+              <span class="note-items">${f.heartNotes.join(', ')}</span>
+            </div>
+            <div class="note-tier">
+              <span class="note-tier-name">Base</span>
+              <span class="note-items">${f.baseNotes.join(', ')}</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="ritual-desc">${f.desc}</p>
+
+        <div class="size-row" id="sizes-${idx}" role="group" aria-label="Select size">
+          ${f.sizes.map((s, si) => `
+            <button class="size-opt ${si === 1 ? 'active' : ''}"
+              onclick="selectSize(${idx}, ${si})"
+              aria-pressed="${si === 1}"
+              aria-label="${s.ml} — ${s.price}">
+              ${s.ml}
+              <span class="size-price">${s.price}</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <div class="add-ritual">
+          <button class="btn-add" onclick="addToCart(${idx})"
+            data-cursor="Add" aria-label="Add to collection tray">
+            Add to Tray
+          </button>
+          <button class="btn-wishlist ${wishlist.has(f.id) ? 'loved' : ''}"
+            id="wish-${idx}"
+            onclick="toggleWishlist(${idx})"
+            aria-label="Save to wishlist"
+            aria-pressed="${wishlist.has(f.id)}">
+            ♡
+          </button>
+        </div>
+
+        <div class="chamber-nav">
+          ${prevIdx !== null ? `
+            <button class="chamber-nav-btn"
+              onclick="showChamber(${prevIdx})"
+              aria-label="Previous fragrance">
+              <span class="nav-arrow">←</span> ${FRAGRANCES[prevIdx].name}
+            </button>
+          ` : ''}
+          <button class="chamber-nav-btn"
+            onclick="showScene('antechamber')"
+            aria-label="Return to collection">
+            All Rituals
+          </button>
+          ${nextIdx !== null ? `
+            <button class="chamber-nav-btn fwd"
+              onclick="showChamber(${nextIdx})"
+              aria-label="Next fragrance">
+              ${FRAGRANCES[nextIdx].name} <span class="nav-arrow">→</span>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(section);
+
+  // 3D vessel tilt on mousemove
+  const atmosphere = section.querySelector('.chamber-atmosphere');
+  const vesselWrap = section.querySelector('.vessel-wrap');
+  if (atmosphere && vesselWrap) {
+    atmosphere.addEventListener('mousemove', e => {
+      const rect = atmosphere.getBoundingClientRect();
+      const rx = ((e.clientY - rect.top)  / rect.height - .5) * -10;
+      const ry = ((e.clientX - rect.left) / rect.width  - .5) * 12;
+      vesselWrap.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    atmosphere.addEventListener('mouseleave', () => {
+      vesselWrap.style.transform = 'perspective(600px) rotateX(0) rotateY(0)';
+    });
+  }
+
+  // init selected size
+  selectedSizes[idx] = 1;
+
+  return section;
+}
+
+/* ══════════════════════════════════════════════════════
+   CART / WISHLIST
+══════════════════════════════════════════════════════ */
+function selectSize(chamberIdx, sizeIdx) {
+  selectedSizes[chamberIdx] = sizeIdx;
+  const row = document.getElementById('sizes-' + chamberIdx);
+  if (!row) return;
+  row.querySelectorAll('.size-opt').forEach((b, i) => {
+    b.classList.toggle('active', i === sizeIdx);
+    b.setAttribute('aria-pressed', i === sizeIdx);
+  });
+}
+
+function addToCart(idx) {
+  const f = FRAGRANCES[idx];
+  const sizeIdx = selectedSizes[idx] ?? 1;
+  const size = f.sizes[sizeIdx];
+  const key = f.id + '-' + sizeIdx;
+
+  if (cart[key]) {
+    cart[key].qty++;
+  } else {
+    cart[key] = { fragrance: f, sizeIdx, size, qty: 1 };
+  }
+
+  // animate button
+  const btns = document.querySelectorAll(`#scene-chamber-${idx} .btn-add`);
+  btns.forEach(b => {
+    b.classList.add('adding');
+    setTimeout(() => b.classList.remove('adding'), 600);
+  });
+
+  updateCartCount();
+  showToast(f.name + ' ' + f.subtitle, size.ml);
+}
+
+function removeFromCart(key) {
+  delete cart[key];
+  updateCartCount();
+  renderTray();
+}
+
+function changeQty(key, delta) {
+  if (!cart[key]) return;
+  cart[key].qty = Math.max(1, cart[key].qty + delta);
+  renderTray();
+}
+
+function updateCartCount() {
+  const total = Object.values(cart).reduce((s, c) => s + c.qty, 0);
+  const el = document.getElementById('cart-count');
+  el.textContent = total;
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 300);
+}
+
+function toggleWishlist(idx) {
+  const f = FRAGRANCES[idx];
+  const btn = document.getElementById('wish-' + idx);
+  if (wishlist.has(f.id)) {
+    wishlist.delete(f.id);
+    if (btn) { btn.classList.remove('loved'); btn.setAttribute('aria-pressed', 'false'); }
+  } else {
+    wishlist.add(f.id);
+    if (btn) { btn.classList.add('loved'); btn.setAttribute('aria-pressed', 'true'); }
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   TRAY RENDER
+══════════════════════════════════════════════════════ */
+function renderTray() {
+  const items = document.getElementById('tray-items');
+  const footer = document.getElementById('tray-footer');
+  const sub = document.getElementById('tray-sub');
+  const keys = Object.keys(cart);
+
+  if (keys.length === 0) {
+    items.innerHTML = `
+      <div class="tray-empty">
+        <div class="tray-empty-icon">◈</div>
+        <p class="tray-empty-text">Your tray awaits its first selection.</p>
+        <button class="tray-empty-btn" onclick="showScene('antechamber')">Begin the Ritual</button>
+      </div>`;
+    footer.style.display = 'none';
+    sub.textContent = 'Nothing selected yet';
+    return;
+  }
+
+  const count = keys.reduce((s,k) => s + cart[k].qty, 0);
+  sub.textContent = `${count} selection${count !== 1 ? 's' : ''} — ready for completion`;
+
+  items.innerHTML = keys.map((key, i) => {
+    const c = cart[key];
+    const f = c.fragrance;
+    return `
+      <div class="tray-item" style="animation-delay:${i * .08}s">
+        <div class="tray-item-swatch" style="background:${f.swatchBg}"></div>
+        <div class="tray-item-info">
+          <div class="tray-item-name">${f.name} <em>${f.subtitle}</em></div>
+          <div class="tray-item-detail">${c.size.ml} · Eau de Parfum</div>
+        </div>
+        <div class="tray-item-qty">
+          <button class="qty-btn" onclick="changeQty('${key}', -1)" aria-label="Decrease quantity">−</button>
+          <span>${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${key}', 1)" aria-label="Increase quantity">+</button>
+          <button class="qty-btn" onclick="removeFromCart('${key}')" style="margin-left:8px;font-size:10px" aria-label="Remove from tray">✕</button>
+        </div>
+        <div class="tray-item-price">${c.size.price.replace('€','')}
+          <span style="font-size:.6875rem;color:var(--smoke)"> €</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const total = keys.reduce((s,k) => {
+    return s + cart[k].fragrance.priceNum * cart[k].qty;
+  }, 0);
+  document.getElementById('tray-total-val').textContent = total.toLocaleString();
+  footer.style.display = 'flex';
+}
+
+/* ══════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════ */
+let toastTimer;
+function showToast(name, size) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-name').textContent = name;
+  document.getElementById('toast-text').innerHTML = `<span id="toast-name">${name}</span> (${size}) added to your tray`;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+/* ══════════════════════════════════════════════════════
+   KEYBOARD NAVIGATION
+══════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (currentScene.startsWith('chamber-')) {
+    const idx = parseInt(currentScene.split('-')[1]);
+    if (e.key === 'ArrowRight' && idx < FRAGRANCES.length - 1) showChamber(idx + 1);
+    if (e.key === 'ArrowLeft'  && idx > 0) showChamber(idx - 1);
+    if (e.key === 'Escape') showScene('antechamber');
+  }
+  if (e.key === 'Escape' && currentScene === 'tray') showScene('antechamber');
+});
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+// Pre-build first few chambers for responsiveness
+[0, 1, 2, 3, 4, 5, 6].forEach(i => ensureChamberScene(i));
+updateNavDots(0);
+</script>
+</body>
+</html>
